@@ -11,8 +11,6 @@ T = TypeVar("T")
 # Forward declaration of Bot
 Bot = TypeVar("Bot")
 
-from interactions import Extension
-
 def get_commands() -> Set[T]:
     """
     Load all extensions in a more specific way than included in
@@ -48,25 +46,27 @@ class Bot:
         for command in get_commands():
             if command not in self._currently_running:
                 self._currently_running.add(command)
-                self._extensions.add(command(self.client, self))
-    
-    def reload_commands(self, rebuild = False) -> None:
+                self._extensions.add(command(self._client, self))
+
+
+    # maybe fix reload and unload at some point. rn they do not work
+    async def reload_commands(self, rebuild = False) -> None:
         """
         Reload commands on the client
         :param rebuild: Rebuild commands and modules from scratch
         :return: None
         """
         if rebuild:
-            self.unload_commands()
+            await self.unload_commands()
         self.load_commands()
     
-    def unload_commands(self) -> None:
+    async def unload_commands(self) -> None:
         """
         Destroy currently running commands
         :return: None
         """
         for extension in self._extensions:
-            extension.teardown()
+            await extension.teardown()
         self._extensions = set()
         self._currently_running = set()
     

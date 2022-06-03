@@ -1,6 +1,6 @@
 from pickle import NONE
 from typing import Optional, Union
-from Utilities.enums import COOLDOWN_ENUMS
+from Utilities.enums import CooldownEnums
 from time import time
 
 class CooldownTimer:
@@ -24,7 +24,7 @@ class CooldownManager:
         self.globalCooldowns = dict()
         self.guildCooldowns = dict()
     
-    def set_cooldown(self, commandId: int, userId: str | int, time: int, 
+    def set_cooldown(self, commandId: int, userId: str | int, timeout: int, 
     cType: int, guildId: Optional[str | int] = None) -> None:
         """
         Set a global or guild timeout for commands bound to a specific user.
@@ -41,10 +41,10 @@ class CooldownManager:
         if guildId and type(guildId) == int:
             guildId = str(guildId)
         
-        if cType == COOLDOWN_ENUMS.GLOBAL:
-            self.globalCooldowns[str(commandId)] = {userId: CooldownTimer(time, time.time())}
-        elif cType == COOLDOWN_ENUMS.GUILD:
-            self.guildCooldowns[guildId] = {str(commandId): {userId: CooldownTimer(time, time.time())}}
+        if cType == CooldownEnums.GLOBAL:
+            self.globalCooldowns[str(commandId)] = {userId: CooldownTimer(timeout, time())}
+        elif cType == CooldownEnums.GUILD:
+            self.guildCooldowns[guildId] = {str(commandId): {userId: CooldownTimer(timeout, time())}}
         
     def _check_guild_cooldown(self, guildId: str | int, userId: str | int, commandId: int) -> Union[bool | None, int | None]:
         """
@@ -60,7 +60,7 @@ class CooldownManager:
             if commandCooldowns and commandCooldowns != {}:
                 userCooldown: CooldownTimer = commandCooldowns.get(userId)
                 if userCooldown:
-                    timeLeft = int(round(time.time() - userCooldown.start))
+                    timeLeft = int(round(time() - userCooldown.start))
                     return timeLeft < userCooldown.time, timeLeft
         return None, None
     
@@ -89,7 +89,7 @@ class CooldownManager:
         if commandCooldowns and commandCooldowns != {}:
             userCooldown: CooldownTimer = commandCooldowns.get(userId)
             if userCooldown:
-                timeLeft = int(round(time.time() - userCooldown.start))
+                timeLeft = int(round(time() - userCooldown.start))
                 onCooldown = timeLeft < userCooldown.time
                 if onCooldown:
                     return timeLeft
