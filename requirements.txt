@@ -1,3 +1,4 @@
+# using >= python3.10 for some typing conventions
 discord-py-interactions
 sympy
 networkx

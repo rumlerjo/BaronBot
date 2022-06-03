@@ -1,4 +1,5 @@
-from typing import Optional
+from pickle import NONE
+from typing import Optional, Union
 from Utilities.enums import COOLDOWN_ENUMS
 from time import time
 
@@ -13,6 +14,7 @@ class CooldownTimer:
         :return: None
         """
         self.time = time
+        self.start = start
 
 class CooldownManager:
     """
@@ -44,6 +46,51 @@ class CooldownManager:
         elif cType == COOLDOWN_ENUMS.GUILD:
             self.guildCooldowns[guildId] = {str(commandId): {userId: CooldownTimer(time, time.time())}}
         
-    def _check_guild_cooldown(self, guildId: str | int, userId: str | int) -> float | None:
-        pass
+    def _check_guild_cooldown(self, guildId: str | int, userId: str | int, commandId: int) -> Union[bool | None, int | None]:
+        """
+        Check if a user is on cooldown for a specific command in a guild
+        :param userId: Integer or string representing user's unique Id
+        :param guildId: Integer or string representing a guild's unique string
+        :param commandId: Enumeration of command
+        :return: Whether user is on cooldown or None and time left on cooldown or None
+        """
+        guildCooldowns: dict = self.guildCooldowns.get(guildId)
+        if guildCooldowns and guildCooldowns != {} and guildCooldowns:
+            commandCooldowns: dict = guildCooldowns.get(str(commandId))
+            if commandCooldowns and commandCooldowns != {}:
+                userCooldown: CooldownTimer = commandCooldowns.get(userId)
+                if userCooldown:
+                    timeLeft = int(round(time.time() - userCooldown.start))
+                    return timeLeft < userCooldown.time, timeLeft
+        return None, None
+    
+    def get_cooldown(self, userId: str | int, commandId: int, guildId: Optional[str | int] = None) -> int | None:
+        """
+        Check if a user is on cooldown for a specific command
+        :param userId: Integer or string representing user's unique Id
+        :param commandId: Enumeration of command
+        :param guildId: Integer or string representing a guild's unique string
+        :return: Time left on cooldown or None
+        """
+        if type(userId) == int:
+            userId = str(userId)
+        if guildId and type(guildId) == int:
+            guildId = str(guildId)
 
+        # check for a guild cooldown
+        if guildId:
+            onCooldown, timeLeft = self._check_guild_cooldown(guildId, userId, commandId)
+            if onCooldown:
+                return timeLeft
+            return None
+        
+        # check the global cooldowns
+        commandCooldowns: dict = self.globalCooldowns.get(str(commandId))
+        if commandCooldowns and commandCooldowns != {}:
+            userCooldown: CooldownTimer = commandCooldowns.get(userId)
+            if userCooldown:
+                timeLeft = int(round(time.time() - userCooldown.start))
+                onCooldown = timeLeft < userCooldown.time
+                if onCooldown:
+                    return timeLeft
+                return None
