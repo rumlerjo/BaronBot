@@ -7,6 +7,7 @@ import pyjion
 import interactions
 from bot import Bot
 
+pyjion.config(pgc=False)
 pyjion.enable()
 
 fp = open("botkey.txt")

@@ -1,4 +1,3 @@
-from pickle import NONE
 from typing import Optional, Union
 from Utilities.enums import CooldownEnums
 from time import time
@@ -31,7 +30,7 @@ class CooldownManager:
         Limiting of a whole guild is not currently supported
         :param commandId: Enum of command
         :param userId: User ID of user to timeout
-        :param time: Time in seconds to timeout user
+        :param timeout: Time in seconds to timeout user
         :param cType: Cooldown type according to CooldownEnums
         :guildId: Guild ID to timeout user
         :return: None

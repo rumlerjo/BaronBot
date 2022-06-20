@@ -1,8 +1,6 @@
 import interactions
 from os import scandir
-from importlib import import_module
-from importlib.util import resolve_name
-from typing import TypeVar, Set, Union, Optional
+from typing import TypeVar, Set, Optional
 from Models.cooldown import CooldownManager
 from interactions import Extension
 
@@ -11,20 +9,25 @@ T = TypeVar("T")
 # Forward declaration of Bot
 Bot = TypeVar("Bot")
 
-def get_commands() -> Set[T]:
+class BotExtension(Extension):
+    """
+    A template class used for typehinting
+    """
+    def add_parent(self, parent: Bot) -> None:
+        pass
+
+def get_command_paths() -> Set[T]:
     """
     Load all extensions in a more specific way than included in
     the interactions wrapper.
     :return: Set of all extensions
     """
-    commands = set()
+    paths = set()
     for file in scandir("./src/Commands"):
         if file.is_file and file.name.find(".py") != -1:
             command_name = file.name.replace(".py", "")
-            name = resolve_name(f"Commands.{command_name}", None)
-            module = import_module(name)
-            commands.add(getattr(module, command_name.capitalize()))
-    return commands
+            paths.add(f"Commands.{command_name}")
+    return paths
 
 class Bot:
     """
@@ -34,7 +37,6 @@ class Bot:
         self._client = client
         self._cooldowns = CooldownManager()
         # used as a checker to see which commands are running
-        self._currently_running = set()
         self._extensions: Set[Extension] = set()
         self.load_commands()
 
@@ -43,33 +45,23 @@ class Bot:
         Load commands onto the client
         :return: None
         """
-        for command in get_commands():
-            if command not in self._currently_running:
-                self._currently_running.add(command)
-                self._extensions.add(command(self._client, self))
-
+        for command in get_command_paths():
+            extension: BotExtension = self._client.load(command)
+            self._extensions.add(extension)
+            extension.add_parent(self)
 
     # maybe fix reload and unload at some point. rn they do not work
-    async def reload_commands(self, rebuild = False) -> None:
+    async def reload_commands(self) -> None:
         """
         Reload commands on the client
         :param rebuild: Rebuild commands and modules from scratch
         :return: None
         """
-        if rebuild:
-            await self.unload_commands()
-        self.load_commands()
-    
-    async def unload_commands(self) -> None:
-        """
-        Destroy currently running commands
-        :return: None
-        """
-        for extension in self._extensions:
-            await extension.teardown()
-        self._extensions = set()
-        self._currently_running = set()
-    
+        for command in get_command_paths():
+            extension: BotExtension = self._client.reload(command)
+            self._extensions.add(extension)
+            extension.add_parent(self)
+        
     def set_cooldown(self, cType: int, commandId: int, userId: int | str, 
     time: int, guildId: Optional[str | int] = None) -> None:
         """
