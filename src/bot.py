@@ -1,6 +1,6 @@
 import interactions
 from os import scandir
-from typing import TypeVar, Set, Optional
+from typing import TypeVar, Set, Optional, Union
 from Models.cooldown import CooldownManager
 from interactions import Extension
 
@@ -75,8 +75,8 @@ class Bot:
         """
         self._cooldowns.set_cooldown(commandId, userId, time, cType, guildId)
 
-    def get_cooldown(self, userId: str | int, commandId: int, 
-    guildId: Optional[str | int] = None) -> int | None:
+    def get_cooldown(self, userId: Union[str, int], commandId: Union[str, int], 
+    guildId: Optional[Union[str, int]] = None) -> Union[int, None]:
         """
         A wrapper for CooldownManager's get_cooldown
         :param userId: Integer or String representation of a user's unique identifier

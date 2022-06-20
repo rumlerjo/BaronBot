@@ -23,8 +23,8 @@ class CooldownManager:
         self.globalCooldowns = dict()
         self.guildCooldowns = dict()
     
-    def set_cooldown(self, commandId: int, userId: str | int, timeout: int, 
-    cType: int, guildId: Optional[str | int] = None) -> None:
+    def set_cooldown(self, commandId: int, userId: Union[str, int], timeout: int, 
+    cType: int, guildId: Optional[Union[str, int]] = None) -> None:
         """
         Set a global or guild timeout for commands bound to a specific user.
         Limiting of a whole guild is not currently supported
@@ -45,7 +45,8 @@ class CooldownManager:
         elif cType == CooldownEnums.GUILD:
             self.guildCooldowns[guildId] = {str(commandId): {userId: CooldownTimer(timeout, time())}}
         
-    def _check_guild_cooldown(self, guildId: str | int, userId: str | int, commandId: int) -> Union[bool | None, int | None]:
+    def _check_guild_cooldown(self, guildId: Union[str, int], userId: Union[str, int], commandId: int) \
+    -> Optional[Union[bool, int]]:
         """
         Check if a user is on cooldown for a specific command in a guild
         :param userId: Integer or string representing user's unique Id
@@ -63,7 +64,7 @@ class CooldownManager:
                     return timeLeft < userCooldown.time, timeLeft
         return None, None
     
-    def get_cooldown(self, userId: str | int, commandId: int, guildId: Optional[str | int] = None) -> int | None:
+    def get_cooldown(self, userId: Union[str, int], commandId: int, guildId: Optional[Union[str, int]] = None) -> Optional[int]:
         """
         Check if a user is on cooldown for a specific command
         :param userId: Integer or string representing user's unique Id

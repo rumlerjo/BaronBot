@@ -1,6 +1,6 @@
 from http import server
 from Models.player import Player
-from typing import Dict, List
+from typing import Dict, List, Union
 from Models.game import Game
 
 class GameManager:
@@ -8,7 +8,7 @@ class GameManager:
     def __init__(self) -> None:
         self._games = Dict[str, Dict[str, Game]]
     
-    def add_game(self, game: Game, serverId: int | str, gameWindow: int | str) -> bool:
+    def add_game(self, game: Game, serverId: Union[int, str], gameWindow: Union[int, str]) -> bool:
         """
         Add a game to the manager
         :param game: The game object to add
