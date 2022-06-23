@@ -10,4 +10,4 @@ Open a terminal in the repo path <br>
 Assuming python3 is installed, run `pip install -r requirements.txt` <br>
 ### Running
 Get your discord client secret and create a botkey.txt file and paste it in<br>
-From /src/ run `python launch.py`
+From root directory run `python src/launch.py`
