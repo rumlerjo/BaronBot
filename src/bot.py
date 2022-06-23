@@ -2,7 +2,8 @@ import interactions
 from os import scandir
 from typing import TypeVar, Set, Optional, Union
 from Models.cooldown import CooldownManager
-from interactions import Extension
+from interactions import Extension, Snowflake
+from interactions.api.dispatch import Listener
 
 # A generic class
 T = TypeVar("T")
@@ -62,8 +63,8 @@ class Bot:
             self._extensions.add(extension)
             extension.add_parent(self)
         
-    def set_cooldown(self, cType: int, commandId: int, userId: int | str, 
-    time: int, guildId: Optional[str | int] = None) -> None:
+    def set_cooldown(self, cType: int, commandId: int, userId: Union[str, int], 
+    time: int, guildId: Optional[Union[str, int]] = None) -> None:
         """
         A wrapper for CooldownManager's set_cooldown
         :param cType: Enumeration of cooldown type
@@ -75,8 +76,8 @@ class Bot:
         """
         self._cooldowns.set_cooldown(commandId, userId, time, cType, guildId)
 
-    def get_cooldown(self, userId: Union[str, int], commandId: Union[str, int], 
-    guildId: Optional[Union[str, int]] = None) -> Union[int, None]:
+    def get_cooldown(self, userId: Snowflake, commandId: int, 
+    guildId: Optional[Snowflake] = None) -> Optional[int]:
         """
         A wrapper for CooldownManager's get_cooldown
         :param userId: Integer or String representation of a user's unique identifier

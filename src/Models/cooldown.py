@@ -1,4 +1,6 @@
 from typing import Optional, Union
+
+from interactions import Snowflake
 from Utilities.enums import CooldownEnums
 from time import time
 
@@ -23,8 +25,8 @@ class CooldownManager:
         self.globalCooldowns = dict()
         self.guildCooldowns = dict()
     
-    def set_cooldown(self, commandId: int, userId: Union[str, int], timeout: int, 
-    cType: int, guildId: Optional[Union[str, int]] = None) -> None:
+    def set_cooldown(self, commandId: int, userId: Snowflake, timeout: int, 
+    cType: int, guildId: Optional[Snowflake] = None) -> None:
         """
         Set a global or guild timeout for commands bound to a specific user.
         Limiting of a whole guild is not currently supported
@@ -35,17 +37,15 @@ class CooldownManager:
         :guildId: Guild ID to timeout user
         :return: None
         """
-        if type(userId) == int:
-            userId = str(userId)
-        if guildId and type(guildId) == int:
-            guildId = str(guildId)
+        userId = str(userId)
+        guildId = str(guildId)
         
         if cType == CooldownEnums.GLOBAL:
             self.globalCooldowns[str(commandId)] = {userId: CooldownTimer(timeout, time())}
         elif cType == CooldownEnums.GUILD:
             self.guildCooldowns[guildId] = {str(commandId): {userId: CooldownTimer(timeout, time())}}
         
-    def _check_guild_cooldown(self, guildId: Union[str, int], userId: Union[str, int], commandId: int) \
+    def _check_guild_cooldown(self, guildId: Snowflake, userId: Snowflake, commandId: int) \
     -> Optional[Union[bool, int]]:
         """
         Check if a user is on cooldown for a specific command in a guild
@@ -54,6 +54,10 @@ class CooldownManager:
         :param commandId: Enumeration of command
         :return: Whether user is on cooldown or None and time left on cooldown or None
         """
+        # snowflake auto represents as string, just being safe
+        userId = str(userId)
+        guildId = str(guildId)
+
         guildCooldowns: dict = self.guildCooldowns.get(guildId)
         if guildCooldowns and guildCooldowns != {} and guildCooldowns:
             commandCooldowns: dict = guildCooldowns.get(str(commandId))
@@ -64,7 +68,7 @@ class CooldownManager:
                     return timeLeft < userCooldown.time, timeLeft
         return None, None
     
-    def get_cooldown(self, userId: Union[str, int], commandId: int, guildId: Optional[Union[str, int]] = None) -> Optional[int]:
+    def get_cooldown(self, userId: Snowflake, commandId: int, guildId: Snowflake = None) -> Optional[int]:
         """
         Check if a user is on cooldown for a specific command
         :param userId: Integer or string representing user's unique Id
@@ -72,11 +76,9 @@ class CooldownManager:
         :param guildId: Integer or string representing a guild's unique string
         :return: Time left on cooldown or None
         """
-        if type(userId) == int:
-            userId = str(userId)
-        if guildId and type(guildId) == int:
+        userId = str(userId)
+        if guildId:
             guildId = str(guildId)
-
         # check for a guild cooldown
         if guildId:
             onCooldown, timeLeft = self._check_guild_cooldown(guildId, userId, commandId)

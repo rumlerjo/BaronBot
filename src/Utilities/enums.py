@@ -8,3 +8,5 @@ class CooldownEnums(Enum):
 class CommandEnums(Enum):
     """Enumerations of commands"""
     PING = 1
+    RELOAD = 2
+    START = 3

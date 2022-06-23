@@ -7,6 +7,20 @@ class GameManager:
     """A container to manage games"""
     def __init__(self) -> None:
         self._games = Dict[str, Dict[str, Game]]
+        self._lobbies = Dict[str, Dict[str, Game]]
+
+    def open_lobby(self, serverId: Union[int, str], lobbyMsg: Union[int, str]) -> None:
+        """
+        Open a lobby message for players to join, and transition into a game
+        :param serverId: Id of server lobby is opened in
+        :param lobbyMsg: Id of join lobby message
+        :return: None
+        """
+        if type(serverId) == int:
+            serverId = str(serverId)
+        if type(lobbyMsg) == int:
+            lobbyMsg = str(lobbyMsg)
+        game = Game()
     
     def add_game(self, game: Game, serverId: Union[int, str], gameWindow: Union[int, str]) -> bool:
         """
