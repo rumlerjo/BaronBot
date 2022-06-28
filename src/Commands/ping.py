@@ -16,7 +16,7 @@ class Ping(Extension):
         enum = CommandEnums.PING
         cooldown = self._parent.get_cooldown(ctx.user.id, enum)
         if cooldown:
-            await ctx.send("You are on cooldown for Ping! Please wait " + str(cooldown) + " seconds.",
+            await ctx.send("You are on cooldown for this command for another " + str(cooldown) + " seconds.",
             ephemeral = True)
             return
         await ctx.send("Pong! " + str(round(self.client.latency)) + "ms response.")

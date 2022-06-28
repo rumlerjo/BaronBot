@@ -1,5 +1,7 @@
-from typing import TypeVar, List, Union
+from typing import TypeVar, List, Union, Optional
 
+from interactions import Snowflake, User
+from settings import Settings
 from player import Player
 
 names = ['Atchison, Topeka, & Santa Fe', 'Atlantic Coast Line', 'Baltimore & Ohio', 
@@ -42,11 +44,27 @@ class Road:
 
 
 class Game:
-    def __init__(self, players: List[Player], guild: str, gameWindow: Union[int, str]) -> None:
-        self._players = dict() # format will be "userid" : player object
+    def __init__(self, guild: Snowflake, settings: Settings, gameWindow: Union[int, str]) -> None:
+        self._players: List[Player] = list()
         self._guildId = guild
-        self._roads = [Road(names[i], abvs[i], prices[i]) for i in range(len(names))] # in format "road name": owner player id
+        self._roads = [Road(names[i], abvs[i], prices[i]) for i in range(len(names))]
         self._gameWindow = str(gameWindow) # the main message window
+        self._current_player = 0 # idx of current player
+    
+    def add_player(self, player: Player) -> None:
+        """
+        Add a player to the game
+        :param player: The player object to add to game
+        """
+        self._players.append(player)
+
+    def get_player(self, player: Union[str, Snowflake, User]) -> Optional[Player]:
+        """
+        Find a player by id in game, or return None
+        :param playerId: 
+        """
+        if player in self._players:
+            return self._players[self._players.index(player)]
     
     def print_roads(self) -> None:
         """
@@ -66,8 +84,5 @@ class Game:
             out += f"[{i}] " + str(road)
         return out
 
-game = Game(players = [], guild = "1", gameWindow = "2")
-
-game.print_roads()
 
 

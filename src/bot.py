@@ -19,9 +19,8 @@ class BotExtension(Extension):
 
 def get_command_paths() -> Set[T]:
     """
-    Load all extensions in a more specific way than included in
-    the interactions wrapper.
-    :return: Set of all extensions
+    Gets all names of extensions to load onto the client
+    :return: Set of all extension names
     """
     paths = set()
     for file in scandir("./src/Commands"):
@@ -37,6 +36,9 @@ class Bot:
     def __init__(self, client: interactions.Client) -> None:
         self._client = client
         self._cooldowns = CooldownManager()
+        self._listener = Listener() # probably not necessary for the time being
+        # get the event listener running on the same loop as the bot
+        self._listener.loop = self._client._loop
         # used as a checker to see which commands are running
         self._extensions: Set[Extension] = set()
         self.load_commands()
@@ -51,17 +53,34 @@ class Bot:
             self._extensions.add(extension)
             extension.add_parent(self)
 
-    # maybe fix reload and unload at some point. rn they do not work
+    # fixedish
     async def reload_commands(self) -> None:
         """
         Reload commands on the client
-        :param rebuild: Rebuild commands and modules from scratch
         :return: None
         """
         for command in get_command_paths():
             extension: BotExtension = self._client.reload(command)
             self._extensions.add(extension)
             extension.add_parent(self)
+
+    async def unload_all_commands(self) -> None:
+        """
+        Unload all currently loaded commands
+        :return None:
+        """
+        for command in get_command_paths():
+            self._client.remove(command)
+        # just set it back to empty because it (should) be
+        self._extensions = set()
+
+    async def unload_and_reload_commands(self) -> None:
+        """
+        Fully unload and reload every currently loaded extension
+        :return None:
+        """
+        self.unload_all_commands()
+        self.load_commands()
         
     def set_cooldown(self, cType: int, commandId: int, userId: Union[str, int], 
     time: int, guildId: Optional[Union[str, int]] = None) -> None:

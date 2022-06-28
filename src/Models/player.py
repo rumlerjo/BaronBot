@@ -1,5 +1,5 @@
-from interactions import GuildMember
-from typing import TypeVar
+from interactions import Snowflake, User
+from typing import TypeVar, Union
 
 T = TypeVar("T")
 Player = TypeVar("Player")
@@ -8,7 +8,7 @@ class Player:
     """
     The board game player representing current affairs of each player
     """
-    def __init__(self, user: GuildMember, player_data: dict = None) -> None:
+    def __init__(self, user: User, player_data: dict = None) -> None:
         if not player_data:
             self._user = user
             self.name = user.nick
@@ -17,6 +17,15 @@ class Player:
             self._express = False
             self._space = None
             self._current_trip = None
+        
+    def __eq__(self, player: Union[str, Snowflake, User]) -> bool:
+        if type(player) == str:
+            return player == self._user.username or player == str(self._user.id)
+        if type(player) == Snowflake:
+            return player == self._user.id
+        if type(player) == User:
+            return player.id == self._user.id # best unique identifier
+        return False
     
     def get_cash(self):
         return self._cash
