@@ -4,6 +4,9 @@ from typing import TypeVar, Set, Optional, Union
 from Models.cooldown import CooldownManager
 from interactions import Extension, Snowflake
 from interactions.api.dispatch import Listener
+from Models.game import Game
+from Models.gamemanager import GameManager
+from Models.settings import Settings
 
 # A generic class
 T = TypeVar("T")
@@ -41,6 +44,7 @@ class Bot:
         self._listener.loop = self._client._loop
         # used as a checker to see which commands are running
         self._extensions: Set[Extension] = set()
+        self._gameManager = GameManager()
         self.load_commands()
 
     def load_commands(self) -> None:
@@ -105,4 +109,12 @@ class Bot:
         :return: Amount of time left in cooldown or None
         """
         return self._cooldowns.get_cooldown(userId, commandId, guildId)
+
+    def create_lobby(self, serverId: Snowflake, lobbyMsg: Snowflake, settings: Settings) -> Game:
+        """
+        A wrapper for GameManager's OpenLobby
+        :return: None
+        """
+        lobby = self._gameManager.open_lobby(serverId, lobbyMsg, settings)
+        return lobby
     

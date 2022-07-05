@@ -1,5 +1,5 @@
 from typing import TypeVar, List, Union, Optional
-
+from railroad import Road
 from interactions import Snowflake, User
 from settings import Settings
 from player import Player
@@ -20,29 +20,6 @@ prices = [40000, 12000, 24000, 4000, 20000, 14000, 20000, 29000, 18000, 6000, 17
 12000, 14000, 18000, 21000, 28000, 4000, 12000, 14000, 30000, 4000, 14000, 42000, 20000,
 19000, 10000, 40000, 8000]
 
-class Road:
-    """Railroad Class"""
-    def __init__(self, name: str, abv: str, price: int) -> None:
-        self._owner: Player = None
-        self._name = name
-        self._abbreviation = abv
-        self._price = price
-        
-    def __eq__(self, name: str) -> bool:
-        return name.lower() == self._name.lower()
-
-    def __str__(self) -> str:
-        out = self._name + "\nPrice: " + str(self._price) + "\nOwned by: "
-        if self._owner:
-            out += self._owner.name + "\n"
-        else:
-            out += "Nobody\n"
-        return out
-    
-    def __repr__(self) -> str:
-        return str(self)
-
-
 class Game:
     def __init__(self, guild: Snowflake, settings: Settings, gameWindow: Union[int, str]) -> None:
         self._players: List[Player] = list()
@@ -50,6 +27,7 @@ class Game:
         self._roads = [Road(names[i], abvs[i], prices[i]) for i in range(len(names))]
         self._gameWindow = str(gameWindow) # the main message window
         self._current_player = 0 # idx of current player
+        self._settings = settings
     
     def add_player(self, player: Player) -> None:
         """

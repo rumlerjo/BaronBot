@@ -91,51 +91,51 @@ class Start(Extension):
         self._parent.set_cooldown(CooldownEnums.GUILD, CommandEnums.START, ctx.user.id,
         10, ctx.guild_id)
 
+
+    async def _setting_component_base(self, ctx: ComponentContext) -> Settings:
+        settings: Settings = settings_tracker.get(ctx.message.id)
+        if settings.userId != ctx.user.id:
+            await ctx.send("These interactions aren't available for you.", ephemeral=True)
+            return
+        return settings
         
     @extension_component("PlayerSelect")
     async def toggle_bpa(self, ctx: ComponentContext, value: int) -> None:
-        settings: Settings = settings_tracker.get(ctx.message.id)
-        if settings.userId != ctx.user.id:
-            await ctx.send("These interactions aren't available for you.", ephemeral=True)
-            return
-        settings.maxPlayers = value
-        # ctx.edit as opposed to ctx.message.edit so interaction is responded to
-        await ctx.edit(embeds=make_embed(settings, ctx))
+        settings = await self._setting_component_base(ctx)
+        if settings:
+            settings.maxPlayers = value
+            # ctx.edit as opposed to ctx.message.edit so interaction is responded to
+            await ctx.edit(embeds=make_embed(settings, ctx))
 
+    # i would like to consolidate all of these into one ...
     @extension_component("BPA")
     async def toggle_bpa(self, ctx: ComponentContext) -> None:
-        print("bpa")
-        settings: Settings = settings_tracker.get(ctx.message.id)
-        if settings.userId != ctx.user.id:
-            await ctx.send("These interactions aren't available for you.", ephemeral=True)
-            return
-        settings.balancedPa = not settings.balancedPa
-        # ctx.edit as opposed to ctx.message.edit so interaction is responded to
-        await ctx.edit(embeds=make_embed(settings, ctx))
+        settings = await self._setting_component_base(ctx)
+        if settings:
+            settings.balancedPa = not settings.balancedPa
+            await ctx.edit(embeds=make_embed(settings, ctx))
         
     @extension_component("PPM")
     async def toggle_bpa(self, ctx: ComponentContext) -> None:
-        settings: Settings = settings_tracker.get(ctx.message.id)
-        if settings.userId != ctx.user.id:
-            await ctx.send("These interactions aren't available for you.", ephemeral=True)
-            return
-        settings.payPerMove = not settings.payPerMove
-        # ctx.edit as opposed to ctx.message.edit so interaction is responded to
-        await ctx.edit(embeds=make_embed(settings, ctx))
+        settings = await self._setting_component_base(ctx)
+        if settings:
+            settings.payPerMove = not settings.payPerMove
+            await ctx.edit(embeds=make_embed(settings, ctx))
         
     @extension_component("POOR")
     async def toggle_bpa(self, ctx: ComponentContext) -> None:
-        settings: Settings = settings_tracker.get(ctx.message.id)
-        if settings.userId != ctx.user.id:
-            await ctx.send("These interactions aren't available for you.", ephemeral=True)
-            return
-        settings.payOnOwnedRoads = not settings.payOnOwnedRoads
-        # ctx.edit as opposed to ctx.message.edit so interaction is responded to
-        await ctx.edit(embeds=make_embed(settings, ctx))
+        settings = await self._setting_component_base(ctx)
+        if settings:
+            settings.payOnOwnedRoads = not settings.payOnOwnedRoads
+            await ctx.edit(embeds=make_embed(settings, ctx))
 
     @extension_component("OpenLobby")
     async def start_response(self, ctx: ComponentContext) -> None:
-        await ctx.send("Hi!!")
+        settings = await self._setting_component_base(ctx)
+        if settings:
+            lobbyMsg = await ctx.send("TempLobbyMsg")
+            lobby = self._parent.create_lobby(ctx.guild_id, lobbyMsg.id, settings)
+            # do stuff
         
     def add_parent(self, parent: Bot) -> None:
         self._parent = parent
