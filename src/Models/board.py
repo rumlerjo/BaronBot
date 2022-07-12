@@ -2,6 +2,9 @@ from player import Player
 from railroad import Road
 import networkx
 
+
+# im so unbelievably inconsistent with using slots
+
 class Space:
     """
     A class to represent a space that a piece can be on
@@ -15,6 +18,13 @@ class Space:
         self.region = region # should this be abv or full?
         self.occupiedBy: Player = None
         # getters and setters or just directly . index it?
+
+class CitySpace(Space):
+    __slots__ = ["city"]
+
+    def __init__(self, road: Road, name: str, region: str) -> None:
+        super().__init__(road, name, region)
+        self.city: str = None
 
 
 class Board:

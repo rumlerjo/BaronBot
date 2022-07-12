@@ -1,8 +1,9 @@
 from typing import Any, Optional, TypeVar, Union
 
-from board import Space
+from board import Space, CitySpace
 
 Node = TypeVar("Node")
+LLIter = TypeVar("LLIter")
 LinkedList = TypeVar("LinkedList")
 
 class LinkedListOutOfRange(Exception):
@@ -184,8 +185,28 @@ class LinkedList:
         self._size -= 1
         return to_remove
 
+    class LLIter:
+        """An iterator class for Linked List"""
+        def __init__(self, linkedList: LinkedList) -> None:
+            self._list = linkedList
+            self._current_node = linkedList.head()
+        
+        def __next__(self) -> Node:
+            if self._current_node.next:
+                self._current_node = self._current_node.next
+                return self._current_node
+            return StopIteration
+    
+    def __iter__(self) -> LLIter:
+        return LLIter(self)
+
 class Trip:
-    def __init__(self, start: Space, end: Space) -> None:
+    """A class representing a trip a player has made from start to destination"""
+    def __init__(self, start: CitySpace, end: CitySpace) -> None:
+        """
+        :param start: The starting Space denoted with a city
+        :param end: The ending Space denoted with a city
+        """
         self._path = LinkedList()
         self._start = start
         self._end = end
@@ -198,6 +219,9 @@ class Trip:
         for i in range(len(self._path)):
             path.append(self._path[i])
         return path
+
+    def calculate_cost(self) -> int:
+        pass
     
     def __getitem__(self, idx: int) -> Space:
-        self._path[idx]
+        return self._path[idx]
