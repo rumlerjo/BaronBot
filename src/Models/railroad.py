@@ -21,3 +21,6 @@ class Road:
     
     def __repr__(self) -> str:
         return str(self)
+
+    def name(self) -> str:
+        return self._name

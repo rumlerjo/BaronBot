@@ -26,7 +26,7 @@ class Node:
     
     def __eq__(self, o: Union[Node, Any]) -> bool:
         if type(o) == Node:
-            return self == Node # will this work?
+            return self == o # will this work?
         elif type(o) == type(self.value):
             return self.value == o
         return False
