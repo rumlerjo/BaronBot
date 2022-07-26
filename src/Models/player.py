@@ -8,6 +8,10 @@ class Player:
     """
     The board game player representing current affairs of each player
     """
+
+    __slots__ = ["_user", "name", "_cash", "_superchief", "_express", 
+    "_space", "_current_trip"]
+
     def __init__(self, user: User, player_data: dict = None) -> None:
         if not player_data:
             self._user = user

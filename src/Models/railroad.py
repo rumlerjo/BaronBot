@@ -1,7 +1,10 @@
-from player import Player
+from Models.player import Player
 
 class Road:
     """Railroad Class"""
+
+    __slots__ = ["_owner", "_name", "_abbreviation", "_price"]
+    
     def __init__(self, name: str, abv: str, price: int) -> None:
         self._owner: Player = None
         self._name = name

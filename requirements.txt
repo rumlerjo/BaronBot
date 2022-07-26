@@ -1,6 +1,7 @@
 # using >= python3.10 for some typing conventions
+# decided against this for backwards compatibility
 discord-py-interactions
 sympy
-networkx
 # pyjion will require >= .NET 6.0
 pyjion # experimenting with JIT
+pillow

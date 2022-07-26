@@ -1,8 +1,8 @@
 from typing import TypeVar, List, Union, Optional
-from railroad import Road
+from Models.railroad import Road
 from interactions import Snowflake, User
-from settings import Settings
-from player import Player
+from Models.settings import Settings
+from Models.player import Player
 
 class Game:
     def __init__(self, guild: Snowflake, settings: Settings, gameWindow: Union[int, str]) -> None:

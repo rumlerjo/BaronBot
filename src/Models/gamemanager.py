@@ -1,7 +1,7 @@
 from interactions import Snowflake
 from typing import Dict, List, Union
-from game import Game
-from settings import Settings
+from Models.game import Game
+from Models.settings import Settings
 
 class GameManager:
     """A container to manage games"""

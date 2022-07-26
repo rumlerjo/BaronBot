@@ -1,6 +1,6 @@
-from player import Player
-from railroad import Road
-import networkx
+from Models.player import Player
+from Models.railroad import Road
+from Utilities.adjacencygraph import AdjacencyGraph
 from typing import Dict, Optional, Tuple
 
 ROAD_NAMES = ['Atchison, Topeka, & Santa Fe', 'Atlantic Coast Line', 'Baltimore & Ohio', 
@@ -104,9 +104,28 @@ cities = {1: "Chicago", 4: "Cincinatti", 9: "Louisville", 14: "Richmond", 16: "W
 24: "Buffalo"}
 co = create_road_spaces(RAILROADS["C&O"], cities, "CO", 24)
 
+# Chicago & Northwestern
+cities = {1: "Casper", 5: "Rapid City", 12: "Minneapolis/St. Paul", 17: "Omaha", 25: "Chicago", 27: "Milwaukee"}
+cn = create_road_spaces(RAILROADS["C&NW"], cities, "CN", 30)
+
+# Chicago, Burlington, & Quincy
+cities = {1: "Billings", 5: "Casper", 9: "Denver", 11: "Pueblo", 20: "Fort Worth", 27: "Omaha", 33: "Chicago", 
+42: "Kansas City", 45: "St. Louis"}
+cb = create_road_spaces(RAILROADS["CB&Q"], cities, "CB", 45)
+
+# Chicago, Rock Island, & Pacific
+# This one got SNAFU'd on the pic (wb file SNAFU'd too) - unlabelled leading to Chicago
+# are 45 46 47 48
+cities = {1: "Tucumcari", 9: "Kansas City", 12: "Des Moines", 18: "Omaha", 16: "Minneapolis/St. Paul",
+32: "Oklahoma City", 38: "Fort Worth", 42: "Little Rock", 44: "Memphis", 48: "Chicago"}
+cr = create_road_spaces(RAILROADS["CRI&P"], cities, "CR", 48)
+
 # Chicago, Milwaukee, St. Paul, & Pacific
 cities = {1: "Seattle", 4: "Spokane", 21: "Minneapolis/St. Paul", 25: "Milwaukee", 27: "Chicago"}
 cm = create_road_spaces(RAILROADS["CMStP&P"], cities, "CM", 27)
+
+# Denver & Rio Grande Western
+cities = {2: "Salt Lake City", }
 
 # Great Northern
 cities = {1: "Portland OR", 5: "Spokane", 8: "Seattle", 24: "Fargo", 27: "Minneapolis/St. Paul", 30: "Butte"}
@@ -117,17 +136,9 @@ cities = {1: "Portland OR", 10: "Pocatello", 14: "Butte", 29: "Omaha", 33: "Kans
 39: "Las Vegas", 43: "Los Angeles"}
 up = create_road_spaces(RAILROADS["UP"], cities, "UP", 43)
 
+DEFAULT_GRAPH = AdjacencyGraph()
 
-
-
-"""
-# Southern Pacific
-sp1 = Space("SP", "SP1", )
-"""
-
-DEFAULT_GRAPH = networkx.graph.Graph()
-
-BALANCED_GRAPH = DEFAULT_GRAPH.copy() # should perform a deepcopy
+BALANCED_GRAPH = DEFAULT_GRAPH.copy()
 
 class Board:
     """
