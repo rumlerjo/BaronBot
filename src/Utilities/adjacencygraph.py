@@ -1,7 +1,11 @@
+"""
+Adjacency Graph class implementation
+@author John Rumler https://github.com/rumlerjo
+"""
+
 
 # networkx and easygraph were not customized enough for my liking.
 # this will be a simple doubly-associated adjacency graph (see what my neighbor is!)
-from re import M
 from typing import Any, Dict, List, TypeVar, Optional
 from copy import deepcopy
 
@@ -163,7 +167,7 @@ class AdjacencyGraph:
         if nodeList == None:
             # should only occur on first call
             nodeList = self._nodes
-            nodeList.sort(key=lambda x: x.id())
+            nodeList.sort(key = lambda x: x.id())
 
         right = len(nodeList) - 1
         left = 0
@@ -205,4 +209,7 @@ class AdjacencyGraph:
         return node
 
     def copy(self) -> AdjacencyGraph:
-        pass
+        """
+        :return: a deep copy of the graph.
+        """
+        return deepcopy(self)

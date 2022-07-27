@@ -1,3 +1,8 @@
+"""
+Bot game manager class implementation
+@author John Rumler https://github.com/rumlerjo
+"""
+
 from interactions import Snowflake
 from typing import Dict, List, Union
 from Models.game import Game

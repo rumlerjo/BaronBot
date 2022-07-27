@@ -1,3 +1,8 @@
+"""
+Bot user class implementation
+@author John Rumler https://github.com/rumlerjo
+"""
+
 from typing import Optional, List, Union
 from interactions import Snowflake
 from interactions.client import User

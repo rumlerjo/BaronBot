@@ -1,3 +1,8 @@
+"""
+Game player class implementation
+@author John Rumler https://github.com/rumlerjo
+"""
+
 from interactions import Snowflake, User
 from typing import TypeVar, Union
 

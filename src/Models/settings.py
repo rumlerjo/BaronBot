@@ -1,3 +1,8 @@
+"""
+Game settings class implementation
+@author John Rumler https://github.com/rumlerjo
+"""
+
 from interactions import Snowflake
 
 class Settings:

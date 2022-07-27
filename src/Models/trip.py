@@ -1,3 +1,8 @@
+"""
+Trip class implementation for tracking a player's trip on the board
+@author John Rumler https://github.com/rumlerjo
+"""
+
 from typing import Any, List
 
 from Models.board import Space, CitySpace

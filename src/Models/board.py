@@ -1,3 +1,8 @@
+"""
+Rail Baron board setup
+@author John Rumler https://github.com/rumlerjo
+"""
+
 from Models.player import Player
 from Models.railroad import Road
 from Utilities.adjacencygraph import AdjacencyGraph

@@ -1,3 +1,8 @@
+"""
+Board railroad class implementation
+@author John Rumler https://github.com/rumlerjo
+"""
+
 from Models.player import Player
 
 class Road:

@@ -1,3 +1,8 @@
+"""
+Bot command cooldown class implementation
+@author John Rumler https://github.com/rumlerjo
+"""
+
 from typing import Optional, Union
 
 from interactions import Snowflake

@@ -1,6 +1,6 @@
 """
 Launch the bot.
-@author John Rumler https://github.com/shaftboyardee
+@author John Rumler https://github.com/rumlerjo
 """
 
 import pyjion

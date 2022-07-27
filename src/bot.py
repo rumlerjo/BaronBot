@@ -1,3 +1,8 @@
+"""
+Bot class implemenation
+@author John Rumler https://github.com/rumlerjo
+"""
+
 import interactions
 from os import scandir
 from typing import TypeVar, Set, Optional, Union

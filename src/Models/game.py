@@ -1,3 +1,8 @@
+"""
+Bot game class implementation
+@author John Rumler https://github.com/rumlerjo
+"""
+
 from typing import TypeVar, List, Union, Optional
 from Models.railroad import Road
 from interactions import Snowflake, User
