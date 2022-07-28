@@ -202,7 +202,6 @@ class AdjacencyGraph:
         """
         node = self._nodes.get(lookForId)
         if node:
-            n: GraphNode = None
             for n in self._nodes.values():
                 n.disconnect(node)
             self._nodes.pop(lookForId)
