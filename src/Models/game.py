@@ -50,6 +50,3 @@ class Game:
         for i, road in enumerate(self._roads):
             out += f"[{i}] " + str(road)
         return out
-
-
-
