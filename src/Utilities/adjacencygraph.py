@@ -6,7 +6,7 @@ Adjacency Graph class implementation
 
 # networkx and easygraph were not customized enough for my liking.
 # this will be a simple doubly-associated adjacency graph (see what my neighbor is!)
-from typing import Any, Dict, List, TypeVar, Optional
+from typing import Any, Dict, Hashable, List, TypeVar, Optional
 from copy import deepcopy
 
 GraphNode = TypeVar("GraphNode")
@@ -98,7 +98,7 @@ class GraphNode:
         return self.id() + str(self._adj)
 
     def __str__(self) -> str:
-        return "Node: " + self.id() + " with data " + str(self._data)
+        return "Node " + self.id() + " with data " + str(self._data)
 
     def __repr__(self) -> str:
         return str(self)
@@ -112,7 +112,7 @@ class AdjacencyGraph:
     __slots__ = ["_size", "_nodes"]
 
     def __init__(self) -> None:
-        self._nodes: List[GraphNode] = list()
+        self._nodes: Dict[str, GraphNode] = dict()
 
     # personally prefer that it returns the node, so if I add it I can play around with it.
     def add_node(self, node: Optional[GraphNode] = None, nodeId: Optional[str] = None, 
@@ -124,12 +124,13 @@ class AdjacencyGraph:
         :param nodeData: (Optional if node present) The data of the node to insert
         :return: The node added to the graph
         """
+        # this will also update node at whatever id is specified, trying to avoid duplicate Ids
         if node and type(node) == GraphNode:
-            self._nodes.append(node)
+            self[node.id()] = node
             return node
         elif nodeId and nodeData and (type(nodeId) == str or str(nodeId)):
             new_node = GraphNode(nodeId, nodeData)
-            self._nodes.append(new_node)
+            self._nodes[nodeId] = new_node
             return new_node
         else:
             raise InvalidGraphOperation("Invalid parameters supplied to member function 'add_node()'")
@@ -158,35 +159,33 @@ class AdjacencyGraph:
             self.add_node(node = node2)
         node1.connect(node2)
 
-    def find_node(self, lookForId: str, nodeList: Optional[List[GraphNode]] = None) -> Optional[GraphNode]:
+    def __getitem__(self, id: Hashable) -> GraphNode:
         """
-        A binary search to find a node by Id
-        :lookForId: Id to look for
-        :nodeList: The list to search through
-        """
-        if nodeList == None:
-            # should only occur on first call
-            nodeList = self._nodes
-            nodeList.sort(key = lambda x: x.id())
-
-        right = len(nodeList) - 1
-        left = 0
-        
-        if right >= left:
-            midPoint = left + (right - left) // 2
-            if nodeList[midPoint].id() == lookForId:
-                return nodeList[midPoint]
-            elif nodeList[midPoint].id() > lookForId:
-                return self.find_node(lookForId, nodeList[left:midPoint])
-            else:
-                return self.find_node(lookForId, nodeList[midPoint + 1:right + 1])
-
-    def __getitem__(self, id: str) -> GraphNode:
-        """
-        The same as find_node, but with index notation Graph["id"]
+        The same as self._nodes[id], but allows direct indexing of class object
         :param id: Id of node to find
+        :return: Found node or none
         """
-        return self.find_node(id)
+        try:
+            str(id)
+        except:
+            raise InvalidGraphOperation("Key supplied for indexing is not hashable")
+        item = self._nodes.get(str(id))
+        if not item:
+            raise InvalidGraphOperation("Key supplied for index has no associated value")
+        return item
+    
+    def __setitem__(self, key: Hashable, val: Any) -> None:
+        """
+        Item assignment, allows self._nodes[id] = data directly from class object
+        :param key: Key to assign with
+        :param val: Value to assign to key
+        :return: None
+        """
+        try:
+            str(key)
+        except:
+            raise InvalidGraphOperation("Key given to item assignment not hashable")
+        self._nodes[key] = val
     
     def __str__(self) -> str:
         # will improve this probably
@@ -201,12 +200,13 @@ class AdjacencyGraph:
         :param lookForId: Id of node to remove
         :return: Removed node
         """
-        node = self.find_node(lookForId)
-        n: GraphNode = None
-        for n in self._nodes:
-            n.disconnect(node)
-        self._nodes.remove(node)
-        return node
+        node = self._nodes.get(lookForId)
+        if node:
+            n: GraphNode = None
+            for n in self._nodes.values():
+                n.disconnect(node)
+            self._nodes.pop(lookForId)
+            return node
 
     def copy(self) -> AdjacencyGraph:
         """
