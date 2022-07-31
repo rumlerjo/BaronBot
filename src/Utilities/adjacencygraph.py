@@ -9,6 +9,8 @@ Adjacency Graph class implementation
 from typing import Any, Dict, Hashable, List, TypeVar, Optional
 from copy import deepcopy
 
+from sympy import degree
+
 GraphNode = TypeVar("GraphNode")
 AdjacencyGraph = TypeVar("AdjacencyGraph")
 NoStringConversion = TypeVar("NoStringConversion")
@@ -69,7 +71,7 @@ class GraphNode:
         """
         # if it's adjacent one way, it should be the other as well.
         self.add_adjacent(otherNode.id(), otherNode)
-        otherNode.add_adjacent(self.id(), otherNode)
+        otherNode.add_adjacent(self.id(), self)
     
     def disconnect(self, otherNode: GraphNode) -> None:
         """
@@ -79,8 +81,10 @@ class GraphNode:
         """
         if self.adjacent().get(otherNode.id()):
             self.adjacent().pop(otherNode.id())
+            self._degree -= 1
         if otherNode.adjacent().get(self.id()):
             otherNode.adjacent().pop(self.id())
+            otherNode._degree -= 1
     
     def id(self) -> str:
         """
@@ -95,7 +99,7 @@ class GraphNode:
         return self._degree
 
     def str_adj(self) -> str:
-        return self.id() + str(self._adj)
+        return "Node " + self.id() + " is adjacent to: " + str(self._adj) + "\n"
 
     def __str__(self) -> str:
         return "Node " + self.id() + " with data " + str(self._data)
@@ -143,8 +147,16 @@ class AdjacencyGraph:
         :param data1: Data of first node
         :param data2: Data of second node
         """
-        node1 = self.add_node(nodeId = id1, nodeData = data1)
-        node2 = self.add_node(nodeId = id2, nodeData = data2)
+        node1: GraphNode = None
+        node2: GraphNode = None
+        if not self._nodes.get(id1):
+            node1 = self.add_node(nodeId = id1, nodeData = data1)
+        else:
+            node1 = self._nodes.get(id1)
+        if not self._nodes.get(id2):
+            node2 = self.add_node(nodeId = id2, nodeData = data2)
+        else:
+            node2 = self._nodes.get(id2)
         node1.connect(node2)
 
     def add_node_adjacency(self, node1: GraphNode, node2: GraphNode) -> None:
@@ -153,9 +165,9 @@ class AdjacencyGraph:
         :param node1: The first node to connect
         :param node2: The second node to connect
         """
-        if not node1 in self._nodes:
+        if not node1.id() in self._nodes:
             self.add_node(node = node1)
-        if not node2 in self._nodes:
+        if not node2.id() in self._nodes:
             self.add_node(node = node2)
         node1.connect(node2)
 
@@ -189,6 +201,7 @@ class AdjacencyGraph:
     
     def __str__(self) -> str:
         # will improve this probably
+        # or not who knows
         return str(self._nodes)
     
     def __repr__(self) -> str:
@@ -206,6 +219,12 @@ class AdjacencyGraph:
                 n.disconnect(node)
             self._nodes.pop(lookForId)
             return node
+    
+    def str_adjacencies(self) -> str:
+        out = str()
+        for node in self._nodes.values():
+            out += node.str_adj()
+        return out
 
     def copy(self) -> AdjacencyGraph:
         """
