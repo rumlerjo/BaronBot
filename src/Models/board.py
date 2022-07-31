@@ -248,8 +248,6 @@ def make_connections() -> AdjacencyGraph:
 
 DEFAULT_GRAPH = make_connections()
 
-print(DEFAULT_GRAPH.str_adjacencies())
-
 BALANCED_GRAPH = DEFAULT_GRAPH.copy()
 
 class Board:
